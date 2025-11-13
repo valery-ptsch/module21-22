@@ -4,12 +4,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.urls import reverse_lazy
-from django.db.models import Q
 from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group
+from .models import Author
+from .mixins import AuthorsOnlyMixin, AuthorRequiredMixin
+
 
 class NewsListView(ListView):
     model = Post
@@ -168,3 +170,21 @@ def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     context = {'post': post}
     return render(request, 'news/post_detail.html', context)
+
+
+@login_required
+def become_author(request):
+    """Представление для добавления пользователя в группу authors"""
+    if request.method == 'POST':
+        authors_group = Group.objects.get(name='authors')
+        request.user.groups.add(authors_group)
+
+        # Создаем профиль автора, если его нет
+        if not hasattr(request.user, 'author'):
+            Author.objects.create(user=request.user)
+
+        messages.success(request, 'Поздравляем! Теперь вы автор и можете публиковать новости и статьи.')
+        return redirect('news_list')
+
+    return render(request, 'news/become_author.html')
+
