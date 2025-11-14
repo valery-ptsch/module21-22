@@ -1,0 +1,102 @@
+{% extends 'default.html' %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-icon">👋</div>
+        <h2>Выход из системы</h2>
+        <p>Вы успешно вышли из своей учетной записи.</p>
+
+        <div class="logout-actions">
+            <a href="{% url 'news_list' %}" class="btn btn-primary">На главную</a>
+            <a href="{% url 'account_login' %}" class="btn btn-success">Войти снова</a>
+        </div>
+
+        <div class="logout-info">
+            <p>Спасибо, что посетили наш портал. Возвращайтесь скорее!</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.logout-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.logout-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.logout-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.logout-card h2 {
+    color: #343a40;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.logout-card p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.logout-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.logout-actions .btn {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    min-width: 150px;
+}
+
+.logout-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.logout-info p {
+    margin: 0;
+    color: #495057;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .logout-container {
+        padding: 20px 15px;
+    }
+
+    .logout-card {
+        padding: 30px 20px;
+    }
+
+    .logout-actions {
+        flex-direction: column;
+    }
+
+    .logout-actions .btn {
+        min-width: auto;
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

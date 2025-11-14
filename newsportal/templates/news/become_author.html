@@ -1,0 +1,111 @@
+<!-- news/templates/news/become_author.html -->
+{% extends 'default.html' %}
+
+{% block title %}Стать автором{% endblock %}
+
+{% block content %}
+<div class="become-author-container">
+    <div class="author-card">
+        <div class="author-header">
+            <h2>🎉 Стать автором</h2>
+            <div class="author-badge">✍️</div>
+        </div>
+
+        <div class="author-benefits">
+            <h3>Что вы получите:</h3>
+            <ul>
+                <li>✅ Возможность публиковать новости</li>
+                <li>✅ Возможность писать статьи</li>
+                <li>✅ Редактирование собственных публикаций</li>
+                <li>✅ Участие в рейтинге авторов</li>
+            </ul>
+        </div>
+
+        <div class="author-action">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg">
+                    🚀 Стать автором!
+                </button>
+            </form>
+            <a href="{% url 'news_list' %}" class="btn btn-secondary">Вернуться назад</a>
+        </div>
+
+        <div class="author-note">
+            <p><strong>Примечание:</strong> После нажатия кнопки вы будете автоматически добавлены в группу авторов.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.become-author-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.author-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.author-header {
+    margin-bottom: 30px;
+}
+
+.author-header h2 {
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.author-badge {
+    font-size: 3rem;
+    margin: 10px 0;
+}
+
+.author-benefits {
+    text-align: left;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.author-benefits h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.author-benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.author-benefits li {
+    padding: 8px 0;
+    font-size: 1.1rem;
+}
+
+.author-action {
+    margin: 30px 0;
+}
+
+.btn-lg {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    margin: 10px;
+}
+
+.author-note {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 15px;
+    color: #0066cc;
+}
+</style>
+{% endblock %}
