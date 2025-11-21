@@ -1,0 +1,48 @@
+<!-- templates/email/welcome_email.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #343a40, #495057); color: white; padding: 30px; text-align: center; }
+        .content { background: #f8f9fa; padding: 30px; }
+        .footer { background: #343a40; color: white; padding: 20px; text-align: center; font-size: 14px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Добро пожаловать на News Portal!</h1>
+        </div>
+
+        <div class="content">
+            <h2>Здравствуйте, {{ user.username }}!</h2>
+
+            <p>Мы рады приветствовать вас на нашем новостном портале. Теперь вы можете:</p>
+
+            <ul>
+                <li>📖 Читать новости и статьи на интересующие вас темы</li>
+                <li>🔔 Подписываться на категории и получать уведомления о новых статьях</li>
+                <li>💬 Оставлять комментарии и обсуждать материалы</li>
+                <li>⭐ Ставить оценки понравившимся публикациям</li>
+            </ul>
+
+            <p>Чтобы начать пользоваться всеми возможностями портала:</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ site_url }}/news/" class="btn">Перейти к новостям</a>
+            </div>
+
+            <p>Если у вас возникнут вопросы, не стесняйтесь обращаться в нашу службу поддержки.</p>
+        </div>
+
+        <div class="footer">
+            <p>С уважением,<br>Команда News Portal</p>
+            <p><small>Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.</small></p>
+        </div>
+    </div>
+</body>
+</html>

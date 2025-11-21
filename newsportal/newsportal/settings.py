@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.yandex',
     'news',
     'django_filters',
+    'django_apscheduler',
 ]
 
 SITE_ID = 1
@@ -164,4 +165,29 @@ SOCIALACCOUNT_PROVIDERS = {
             'key': ''
         }
     }
+}
+
+
+EMAIL_HOST = 'smtp.yandex.ru'  # Или ваш SMTP-сервер
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@yandex.ru'  # Ваш email
+EMAIL_HOST_PASSWORD = 'your-password'  # Пароль приложения
+DEFAULT_FROM_EMAIL = 'valery.wr@yandex.ru'
+SITE_URL = 'http://127.0.0.1:8000'
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # seconds
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+CELERY_BEAT_SCHEDULE = {
+    'weekly-newsletter': {
+        'task': 'news.tasks.send_weekly_newsletter',
+        'schedule': 30.0,  # Каждые 30 секунд для тестирования
+    },
 }

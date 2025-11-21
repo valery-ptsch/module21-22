@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 0 0 10px 10px;
+        }
+        .category-badge {
+            background: #6f42c1;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .article-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #6f42c1;
+        }
+        .article-title {
+            color: #343a40;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .article-link {
+            color: #6f42c1;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .stats {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>📊 Еженедельная подборка статей</h2>
+        <p>Новые материалы в категории "{{ category.name }}"</p>
+    </div>
+
+    <div class="content">
+        <div class="category-badge">
+            📁 {{ category.name }}
+        </div>
+
+        <p>Здравствуйте, {{ subscriber.username }}! Вот новые статьи за последнюю неделю:</p>
+
+        {% for article in articles %}
+        <div class="article-item">
+            <div class="article-title">{{ article.title }}</div>
+            <div style="color: #6c757d; font-size: 0.9em; margin-bottom: 10px;">
+                📅 {{ article.created_at|date:"d.m.Y" }} | 👤 {{ article.author.user.username }}
+            </div>
+            <div style="margin-bottom: 10px;">{{ article.preview }}</div>
+            <a href="{{ site_url }}{{ article.get_absolute_url }}" class="article-link">
+                🔗 Читать статью
+            </a>
+        </div>
+        {% endfor %}
+
+        <div class="stats">
+            <strong>📈 Итого за неделю:</strong><br>
+            {{ articles|length }} новых статей в категории "{{ category.name }}"
+        </div>
+
+        <div class="footer">
+            <p>Вы получили это письмо как подписчик категории "{{ category.name }}".</p>
+            <p>
+                <a href="{{ site_url }}{% url 'manage_subscriptions' %}" style="color: #6c757d;">
+                    ⚙️ Настроить подписки
+                </a> |
+                <a href="{{ site_url }}{% url 'unsubscribe_category' category.id %}" style="color: #dc3545;">
+                    🚫 Отписаться от этой категории
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

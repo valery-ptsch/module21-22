@@ -17,4 +17,7 @@ urlpatterns = [
     path('articles/<int:pk>/edit/', views.ArticleUpdateView.as_view(), name='article_edit'),
     path('articles/<int:pk>/delete/', views.ArticleDeleteView.as_view(), name='article_delete'),
     path('become-author/', views.become_author, name='become_author'),
+    path('subscriptions/', views.subscription_management, name='subscription_management'),
+    path('subscriptions/toggle/<int:category_id>/', views.toggle_subscription, name='toggle_subscription'),
+    path('unsubscribe/category/<int:category_id>/', views.unsubscribe_category, name='unsubscribe_category'),
 ]

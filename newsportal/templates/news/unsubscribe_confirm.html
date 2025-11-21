@@ -1,0 +1,118 @@
+{% extends 'default.html' %}
+
+{% block title %}Отписка от категории{% endblock %}
+
+{% block content %}
+<div class="unsubscribe-container">
+    <div class="unsubscribe-card">
+        <div class="unsubscribe-icon">📭</div>
+        <h2>Отписка от категории</h2>
+
+        <div class="unsubscribe-info">
+            <p>Вы собираетесь отписаться от категории:</p>
+            <div class="category-badge">{{ category.name }}</div>
+        </div>
+
+        <div class="unsubscribe-consequences">
+            <h4>После отписки вы:</h4>
+            <ul>
+                <li>❌ Перестанете получать уведомления о новых статьях в этой категории</li>
+                <li>❌ Не будете получать эту категорию в еженедельных дайджестах</li>
+            </ul>
+        </div>
+
+        <div class="unsubscribe-actions">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg">
+                    🚫 Да, отписаться
+                </button>
+            </form>
+            <a href="{% url 'manage_subscriptions' %}" class="btn btn-secondary">
+                ↩️ Вернуться к подпискам
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.unsubscribe-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.unsubscribe-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.unsubscribe-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.unsubscribe-info {
+    margin: 20px 0;
+}
+
+.category-badge {
+    display: inline-block;
+    background: #6f42c1;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+.unsubscribe-consequences {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px 0;
+    text-align: left;
+    color: #856404;
+}
+
+.unsubscribe-consequences h4 {
+    margin-top: 0;
+    color: #856404;
+}
+
+.unsubscribe-consequences ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.unsubscribe-consequences li {
+    margin-bottom: 8px;
+}
+
+.unsubscribe-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-lg {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .unsubscribe-actions {
+        flex-direction: column;
+    }
+
+    .btn-lg {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- templates/email/new_post_notification.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 20px; }
+        .content { background: #f8f9fa; padding: 25px; }
+        .footer { background: #343a40; color: white; padding: 15px; text-align: center; font-size: 14px; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .post-preview { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>📰 Новая статья в категории "{{ category.name }}"</h2>
+        </div>
+
+        <div class="content">
+            <p>Здравствуйте, {{ user.username }}!</p>
+
+            <p>В категории <strong>"{{ category.name }}"</strong>, на которую вы подписаны, появилась новая статья:</p>
+
+            <div class="post-preview">
+                <h3>{{ post.title }}</h3>
+                <p><strong>Автор:</strong> {{ post.author.user.username }}</p>
+                <p><strong>Дата публикации:</strong> {{ post.created_at|date:"d.m.Y H:i" }}</p>
+                <p>{{ post.content|truncatewords:50 }}</p>
+            </div>
+
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="{{ post.get_absolute_url }}" class="btn">Читать статью полностью</a>
+            </div>
+
+            <p>Если вы больше не хотите получать уведомления из этой категории, вы можете отписаться в настройках подписок.</p>
+        </div>
+
+        <div class="footer">
+            <p>С уважением,<br>Команда News Portal</p>
+            <p><small>Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.</small></p>
+        </div>
+    </div>
+</body>
+</html>

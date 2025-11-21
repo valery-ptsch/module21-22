@@ -4,14 +4,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.urls import reverse_lazy
-from .models import Post, Category
+from .models import Post, Category, Subscription
 from .filters import PostFilter
 from .forms import PostForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from .models import Author
 from .mixins import AuthorsOnlyMixin, AuthorRequiredMixin
-
+from django.http import JsonResponse
 
 class NewsListView(ListView):
     model = Post
@@ -188,3 +188,76 @@ def become_author(request):
 
     return render(request, 'news/become_author.html')
 
+
+@login_required
+def subscription_management(request):
+    """Управление подписками пользователя"""
+    categories = Category.objects.all()
+    user_subscriptions = Subscription.objects.filter(user=request.user)
+    subscribed_category_ids = user_subscriptions.values_list('category_id', flat=True)
+
+    if request.method == 'POST':
+        category_id = request.POST.get('category_id')
+        action = request.POST.get('action')
+
+        category = get_object_or_404(Category, id=category_id)
+
+        if action == 'subscribe':
+            Subscription.objects.get_or_create(user=request.user, category=category)
+            messages.success(request, f'Вы подписались на категорию "{category.name}"')
+        elif action == 'unsubscribe':
+            Subscription.objects.filter(user=request.user, category=category).delete()
+            messages.success(request, f'Вы отписались от категории "{category.name}"')
+
+        return redirect('subscription_management')
+
+    context = {
+        'categories': categories,
+        'subscribed_category_ids': list(subscribed_category_ids),
+    }
+    return render(request, 'news/subscription_management.html', context)
+
+
+@login_required
+def toggle_subscription(request, category_id):
+    """Переключение подписки на категорию"""
+    if request.method == 'POST':
+        category = get_object_or_404(Category, id=category_id)
+
+        subscription, created = Subscription.objects.get_or_create(
+            user=request.user,
+            category=category
+        )
+
+        if created:
+            message = f'Вы подписались на категорию "{category.name}"'
+            messages.success(request, message)
+        else:
+            subscription.delete()
+            message = f'Вы отписались от категории "{category.name}"'
+            messages.success(request, message)
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'subscribed': created,
+                'message': message
+            })
+
+        return redirect('manage_subscriptions')
+
+    return redirect('manage_subscriptions')
+
+
+@login_required
+def unsubscribe_category(request, category_id):
+    """Отписка от категории"""
+    if request.method == 'POST':
+        category = get_object_or_404(Category, id=category_id)
+        Subscription.objects.filter(user=request.user, category=category).delete()
+        messages.success(request, f'Вы отписались от категории "{category.name}"')
+        return redirect('manage_subscriptions')
+
+    category = get_object_or_404(Category, id=category_id)
+    return render(request, 'news/unsubscribe_confirm.html', {
+        'category': category
+    })

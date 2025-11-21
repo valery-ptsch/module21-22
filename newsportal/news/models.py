@@ -2,6 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.db.models.signals import post_save, m2m_changed
+from django.dispatch import receiver
+from django.utils import timezone
+
 
 
 class Author(models.Model):
@@ -31,6 +40,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_subscribers(self):
+        """Получить всех подписчиков категории"""
+        return User.objects.filter(subscription__category=self)
 
 
 class Post(models.Model):
@@ -69,6 +82,16 @@ class Post(models.Model):
         else:
             return reverse('article_detail', args=[str(self.id)])
 
+    def get_absolute_url(self):
+        from django.conf import settings
+        return f"{settings.SITE_URL}{reverse('news_detail', args=[str(self.id)])}"
+
+    def notify_subscribers(self):
+        """Уведомление подписчиков о новой статье"""
+        from .services import send_new_post_notification
+        if self.post_type == self.ARTICLE:  # Уведомляем только о статьях
+            send_new_post_notification(self)
+
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -92,3 +115,63 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Комментарий от {self.user.username} к {self.post.title}"
+
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Категория')
+    subscribed_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата подписки')
+
+    class Meta:
+        unique_together = ('user', 'category')  # Одна подписка на категорию для пользователя
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.category.name}"
+
+    @receiver(post_save, sender=User)
+    def send_welcome_email(sender, instance, created, **kwargs):
+        """Отправка приветственного письма при регистрации"""
+        if created and instance.email:
+            try:
+                subject = 'Добро пожаловать в News Portal!'
+
+                html_message = render_to_string('email/welcome_email.html', {
+                    'user': instance,
+                })
+
+                plain_message = f"""
+                Добро пожаловать в News Portal, {instance.username}!
+
+                Мы рады приветствовать вас в нашем сообществе.
+
+                Теперь вы можете:
+                - Читать новости и статьи
+                - Подписываться на интересующие категории
+                - Получать уведомления о новых публикациях
+                - Комментировать материалы
+
+                Приятного использования!
+
+                С уважением,
+                Команда News Portal
+                """
+
+                send_mail(
+                    subject=subject,
+                    message=plain_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[instance.email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Ошибка отправки приветственного письма: {e}")
+
+    @receiver(m2m_changed, sender=Post.categories.through)
+    def notify_subscribers(sender, instance, action, **kwargs):
+        """Уведомление подписчиков при добавлении статьи в категорию"""
+        if action == "post_add" and instance.post_type == Post.ARTICLE:
+            from .tasks import send_post_notification
+            # Откладываем отправку уведомлений на 10 секунд, чтобы пост успел сохраниться
+            send_post_notification.apply_async([instance.id], countdown=10)
